@@ -12,6 +12,7 @@ app.disable('etag')
 
 // books management
 app.use(versionPath + 'books', require('./routes/books'))
+app.use(versionPath + 'users', require('./routes/users'))
 
 app.use('/', (req, res) => {
     return response.notFound([], res)

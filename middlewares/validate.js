@@ -16,7 +16,7 @@ const body = (schema) => {
       const { details } = error
       console.error(details)
       // console.log(req.body);
-      return response.bad({}, res)
+      return response.error({}, res, details[0].message)
   }
 }
 
@@ -32,13 +32,13 @@ const query = (schemaParam) => {
                       return next()
                   }
               }
-              return response.bad({}, res)
+              return response.error({}, res)
           }
           return next()
       }
       const { details } = error
       console.error(details)
-      return response.bad({}, res)
+      return response.error({}, res, details[0].message)
   }
 }
 
@@ -52,7 +52,7 @@ const param = (schemaParam) => {
       }
       const { details } = error
       console.error(details)
-      return response.bad({}, res)
+      return response.error({}, res, details[0].message)
   }
 }
 

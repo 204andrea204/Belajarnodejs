@@ -1,26 +1,17 @@
-const response = require("../restapi")
+const Books = require("../models/books"),
+response = require("../restapi");
 
 const index = async (req, res) => {
     try {
-        const books = [
-            {
-                "id": "01",
-                "name": "Novel 1"
-            },
-            {
-                "id": "02",
-                "name": "Novel 2"
-            },
-            {
-                "id": "03",
-                "name": "Novel 3"
-            },
-            {
-                "id": "04",
-                "name": "Novel 4"
-            },
-        ]
-        response.ok(books, res)
+        const title = req.query.title
+        Books.getAll(title, (err, books) => {
+            if(err){
+                response.error(err.message, res)
+            }else{
+                console.log(books);
+                response.ok(books, res)
+            }
+        })
     }
     catch (error){
         console.error(error);
@@ -29,7 +20,18 @@ const index = async (req, res) => {
 }
 const show = async (req, res) => {
     try {
-        console.log("heloo");
+        const id = req.params.id
+        Books.findById(id, (err, book) => {
+            if (err) {
+                if (err.kind == "not_found") {
+                    response.notFound({}, res)
+                }else{
+                    response.error(err.message, res)
+                }
+            }else{
+                response.ok(book, res)
+            }
+        })
     }
     catch (error){
         console.error(error);
@@ -38,7 +40,23 @@ const show = async (req, res) => {
 }
 const post = async (req, res) => {
     try {
-        console.log("heloo");
+        const value = req.body
+
+        //buat book object
+        const book = new Books({
+            title: value.title,
+            description: value.description,
+            cover_url: value.cover_url,
+            book_url: value.book_url
+        })
+        // save data
+        Books.create(book, (err, book) => {
+            if (err) {
+                response.error(err.message, res)
+            }else{
+                response.created(book, res)
+            }
+        })
     }
     catch (error){
         console.error(error);
@@ -47,7 +65,19 @@ const post = async (req, res) => {
 }
 const update = async (req, res) => {
     try {
-        console.log("heloo");
+        const id = req.params.id
+        const value = req.body
+        Books.update(id, value, (err, book) => {
+            if (err) {
+                if (err.kind == "not_found") {
+                    response.notFound({}, res)
+                }else{
+                    response.error(err.message, res)
+                }
+            }else{
+                response.created(book, res)
+            }
+        })
     }
     catch (error){
         console.error(error);
@@ -56,7 +86,18 @@ const update = async (req, res) => {
 }
 const destroy = async (req, res) => {
     try {
-        console.log("hello")
+        const id = req.params.id
+        Books.delete(id, (err, book) => {
+            if (err) {
+                if (err.kind == "not_found") {
+                    response.notFound({}, res)
+                }else{
+                    response.error(err.message, res)
+                }
+            }else{
+                response.created(book, res)
+            }
+        })
     }
     catch (error){
         console.error(error);
