@@ -11,6 +11,7 @@ app.use(bodyParser.json())
 app.disable('etag')
 
 // books management
+app.use(versionPath + 'auth', require('./routes/auth'))
 app.use(versionPath + 'books', require('./routes/books'))
 app.use(versionPath + 'users', require('./routes/users'))
 

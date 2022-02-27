@@ -5,6 +5,7 @@ const Users = function(user){
     this.email = user.email
     this.phone = user.phone
     this.address = user.address
+    this.password = user.password
 }
 
 Users.create = (user, result) => {
@@ -55,8 +56,15 @@ Users.getAll = (name, result) => {
 }
 
 Users.update = (id, user, result) => {
-    sql.query(`UPDATE users SET name = ?, email = ?, phone = ?, address = ? WHERE id=${id}`, 
-    [user.name, user.email, user.phone, user.address], (err, res) => {
+    let query = `UPDATE users SET name = ?, email = ?, phone = ?, address = ?`
+    let bodyArr = [user.name, user.email, user.phone, user.address]
+    if (user.password) {
+        query += ', password = ?'
+        bodyArr.push(user.password)
+    }
+    query += `WHERE id=${id}`
+    sql.query(query, 
+    bodyArr, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(err, null)

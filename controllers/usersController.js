@@ -1,5 +1,6 @@
 const Users = require("../models/users"),
-response = require("../restapi");
+response = require("../restapi"),
+bcrypt =  require('bcrypt')
 
 const index = async (req, res) => {
     try {
@@ -44,11 +45,15 @@ const post = async (req, res) => {
     try{
         const value = req.body
 
+        const salt = bcrypt.genSaltSync(10)
+        const salted = bcrypt.hashSync(value.password, salt)
+
         const user = new Users({
             name: value.name,
             email: value.email,
             phone: value.phone,
-            address: value.address
+            address: value.address,
+            password: salted
         })
 
         Users.create(user, (err, user) => {
@@ -69,6 +74,13 @@ const update = async (req, res) => {
     try {
         const id = req.params.id
         const value = req.body
+
+        if (value.password) {
+            const salt = bcrypt.genSaltSync(10)
+            const salted = bcrypt.hashSync(value.password, salt)
+            value.password = salted
+        }
+        
         Users.update(id, value, (err, user) => {
             if (err) {
                 if (err.kind == "not_found") {
